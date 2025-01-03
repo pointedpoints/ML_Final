@@ -1,7 +1,7 @@
 import gymnasium as gym
 from stable_baselines3 import PPO
 from stable_baselines3.common.env_util import make_vec_env
-from gymnasium.envs.toy_text.frozen_lake import FrozenLakeEnv
+from gymnasium.envs.toy_text.frozen_lake import FrozenLakeEnv, generate_random_map
 from gymnasium.envs.registration import register
 
 """
@@ -109,15 +109,35 @@ register(
         "max_steps": 100,  # 最大步数限制
     }
 )
+map = generate_random_map(size=16)
+register(
+    id='FrozenLakeCustom-random-no-render',
+    entry_point=__name__ + ':CustomFrozenLakeEnv',
+    kwargs={
+        'desc': map,
+        'is_slippery': False,
+        "max_steps": 100,  # 最大步数限制
+    }
+)
+register(
+    id='FrozenLakeCustom-random-render',
+    entry_point=__name__ + ':CustomFrozenLakeEnv',
+    kwargs={
+        'desc': map,
+        'is_slippery': False,
+        'render_mode': "human",
+        "max_steps": 100,  # 最大步数限制
+    }
+)
 
 # 将环境包装为向量化环境（适合 PPO 训练）
-vec_env = make_vec_env(lambda: gym.make('FrozenLakeCustom-v1'), n_envs=1)
+vec_env = make_vec_env(lambda: gym.make('FrozenLakeCustom-random-no-render'), n_envs=1)
 
 model = PPO(
     "MlpPolicy",
     vec_env,
     device="cpu",
-    verbose=1,
+    verbose=0,
     ent_coef=0.1,  # 增强探索
     learning_rate=1e-5,  # 调整学习率
     clip_range=0.3  # 调整策略更新范围
@@ -129,7 +149,7 @@ model.learn(total_timesteps=500000)
 print("训练完成！")
 
 # 创建测试环境（启用渲染）
-test_env = make_vec_env(lambda: gym.make('FrozenLakeCustom-v2'), n_envs=1)
+test_env = make_vec_env(lambda: gym.make('FrozenLakeCustom-random-render'), n_envs=1)
 
 # 测试智能体
 print("开始测试智能体...")

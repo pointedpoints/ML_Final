@@ -8,7 +8,7 @@ from stable_baselines3.common.env_util import make_vec_env
 
 
 # 将环境包装为向量化环境（适合 PPO 训练）
-vec_env = make_vec_env(lambda: gym.make("FrozenLake-v1", map_name="4x4", is_slippery=False), n_envs=1)
+vec_env = make_vec_env(lambda: gym.make("FrozenLake-v1", map_name="4x4", is_slippery=True), n_envs=1)
 #print(vec_env)
 #exit()
 # 创建 PPO 模型
@@ -21,7 +21,7 @@ print("训练完成！")
 
 
 # 创建测试环境（启用渲染）
-test_env = make_vec_env(lambda: gym.make("FrozenLake-v1", map_name="4x4", is_slippery=False, render_mode="human"), n_envs=1)
+test_env = make_vec_env(lambda: gym.make("FrozenLake-v1", map_name="4x4", is_slippery=True, render_mode="human"), n_envs=1)
 # 测试智能体
 print("开始测试智能体...")
 obs = test_env.reset()  # Gym API
